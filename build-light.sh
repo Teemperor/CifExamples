@@ -8,4 +8,4 @@ cd "$build_dir"
 
 cmake -DCMAKE_BUILD_TYPE=Release -GNinja ../lighttpd
 
-ninja -j3
+ninja -j4

@@ -1,7 +1,6 @@
 
-~/chalmers/langsec/rel-build/bin/scan-build -V \
+~/chalmers/langsec/rel-build/bin/scan-build \
   --status-bugs \
-  -k \
   -disable-checker apiModeling.TrustNonnull \
   -disable-checker apiModeling.google.GTest \
   -disable-checker core.CallAndMessage \

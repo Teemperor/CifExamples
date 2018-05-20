@@ -4,6 +4,7 @@
 
 #include <string.h>
 
+#include "CIF.h"
 
 static http_auth_scheme_t http_auth_schemes[8];
 
