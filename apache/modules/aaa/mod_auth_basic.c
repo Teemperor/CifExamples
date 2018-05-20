@@ -33,6 +33,8 @@
 
 #include "mod_auth.h"
 
+#include "CIF.h"
+
 typedef struct {
     authn_provider_list *providers;
     char *dir; /* unused variable */
@@ -250,7 +252,7 @@ static int hook_note_basic_auth_failure(request_rec *r, const char *auth_type)
 }
 
 static int get_basic_auth(request_rec *r, const char **user,
-                          const char **pw)
+                          CIFOut const char **pw)
 {
     const char *auth_line;
     char *decoded_line;
@@ -300,7 +302,7 @@ static int authenticate_basic_user(request_rec *r)
 {
     auth_basic_config_rec *conf = ap_get_module_config(r->per_dir_config,
                                                        &auth_basic_module);
-    const char *sent_user, *sent_pw, *current_auth;
+    const char *sent_user, CIFLabel("Pass") *sent_pw, *current_auth;
     const char *realm = NULL;
     const char *digest = NULL;
     int res;
@@ -333,7 +335,7 @@ static int authenticate_basic_user(request_rec *r)
         digest = ap_md5(r->pool,
                         (unsigned char *)apr_pstrcat(r->pool, sent_user, ":",
                                                      realm, ":",
-                                                     sent_pw, NULL));
+                                                     CIFDeclassify("Pass->", sent_pw), NULL));
     }
 
     current_provider = conf->providers;
@@ -380,7 +382,7 @@ static int authenticate_basic_user(request_rec *r)
             }
         }
         else {
-            auth_result = provider->check_password(r, sent_user, sent_pw);
+            auth_result = provider->check_password(r, sent_user, CIFDeclassify("Pass->", sent_pw));
         }
 
         apr_table_unset(r->notes, AUTHN_PROVIDER_NAME_NOTE);

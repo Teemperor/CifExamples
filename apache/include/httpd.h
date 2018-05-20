@@ -58,6 +58,8 @@
 
 #include "os.h"
 
+#include "CIF.h"
+
 #include "ap_regex.h"
 
 #if APR_HAVE_STDLIB_H
@@ -1402,7 +1404,7 @@ AP_DECLARE(char *) ap_ht_time(apr_pool_t *p, apr_time_t t, const char *fmt, int 
  * @param stop The character to stop at
  * @return A copy of the characters up to the first stop character
  */
-AP_DECLARE(char *) ap_getword(apr_pool_t *p, const char **line, char stop);
+CIFPure AP_DECLARE(char *) ap_getword(apr_pool_t *p, const char **line, char stop);
 
 /**
  * Get the characters until the first occurrence of a specified character
