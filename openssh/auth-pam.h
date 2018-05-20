@@ -25,6 +25,8 @@
 #include "includes.h"
 #ifdef USE_PAM
 
+#include "CIF.h"
+
 struct ssh;
 
 void start_pam(Authctxt *);
@@ -39,7 +41,7 @@ char ** fetch_pam_child_environment(void);
 void free_pam_environment(char **);
 void sshpam_thread_cleanup(void);
 void sshpam_cleanup(void);
-int sshpam_auth_passwd(Authctxt *, const char *);
+int sshpam_auth_passwd(Authctxt *, CIFLabel("pw") const char *);
 int sshpam_get_maxtries_reached(void);
 void sshpam_set_maxtries_reached(int);
 int is_pam_session_open(void);

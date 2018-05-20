@@ -243,7 +243,7 @@ static int sshpam_account_status = -1;
 static int sshpam_maxtries_reached = 0;
 static char **sshpam_env = NULL;
 static Authctxt *sshpam_authctxt = NULL;
-static const char *sshpam_password = NULL;
+CIFLabel("pw") static const char *sshpam_password = NULL;
 
 /* Some PAM implementations don't implement this */
 #ifndef HAVE_PAM_GETENVLIST
@@ -826,11 +826,11 @@ sshpam_query(void *ctx, char **name, char **info,
  * vary processing time in proportion to password length.
  */
 static char *
-fake_password(const char *wire_password)
+fake_password(CIFLabel("pw") const char *wire_password)
 {
 	const char junk[] = "\b\n\r\177INCORRECT";
 	char *ret = NULL;
-	size_t i, l = wire_password != NULL ? strlen(wire_password) : 0;
+        size_t i, l = CIFDeclassify("pw->", wire_password) != NULL ? strlen(CIFDeclassify("pw->", wire_password)) : 0;
 
 	if (l >= INT_MAX)
 		fatal("%s: password length too long: %zu", __func__, l);
@@ -1190,9 +1190,9 @@ sshpam_passwd_conv(int n, sshpam_const struct pam_message **msg,
 	for (i = 0; i < n; ++i) {
 		switch (PAM_MSG_MEMBER(msg, i, msg_style)) {
 		case PAM_PROMPT_ECHO_OFF:
-			if (sshpam_password == NULL)
+                        if (CIFDeclassify("pw->", sshpam_password) == NULL)
 				goto fail;
-			if ((reply[i].resp = strdup(sshpam_password)) == NULL)
+                        if ((reply[i].resp = strdup(CIFDeclassify("pw->", sshpam_password))) == NULL)
 				goto fail;
 			reply[i].resp_retcode = PAM_SUCCESS;
 			break;
@@ -1239,7 +1239,7 @@ sshpam_auth_passwd(Authctxt *authctxt, const char *password)
 		fatal("PAM: %s called when PAM disabled or failed to "
 		    "initialise.", __func__);
 
-	sshpam_password = password;
+        sshpam_password = password;
 	sshpam_authctxt = authctxt;
 
 	/*

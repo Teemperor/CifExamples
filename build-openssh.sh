@@ -20,4 +20,4 @@ patch -p1 -i openssl-1.1.0.patch
         --with-md5-passwords \
         --with-pid-dir=/run \
         --with-default-path='/usr/local/sbin:/usr/local/bin:/usr/bin'
-make -j3
+make -j4

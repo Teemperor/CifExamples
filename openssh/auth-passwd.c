@@ -55,6 +55,8 @@
 #include "auth.h"
 #include "auth-options.h"
 
+#include "CIF.h"
+
 extern Buffer loginmsg;
 extern ServerOptions options;
 
@@ -68,12 +70,16 @@ extern login_cap_t *lc;
 
 #define MAX_PASSWORD_LEN	1024
 
+#ifdef CIF
+ CIFPure size_t strlen(const char *s);
+#endif
+
 /*
  * Tries to authenticate the user using password.  Returns true if
  * authentication succeeds.
  */
 int
-auth_password(struct ssh *ssh, const char *password)
+auth_password(struct ssh *ssh, CIFLabel("pw") const char *password)
 {
 	Authctxt *authctxt = ssh->authctxt;
 	struct passwd *pw = authctxt->pw;
@@ -82,14 +88,14 @@ auth_password(struct ssh *ssh, const char *password)
 	static int expire_checked = 0;
 #endif
 
-	if (strlen(password) > MAX_PASSWORD_LEN)
+        if (strlen(CIFDeclassify("pw->", password)) > MAX_PASSWORD_LEN)
 		return 0;
 
 #ifndef HAVE_CYGWIN
 	if (pw->pw_uid == 0 && options.permit_root_login != PERMIT_YES)
 		ok = 0;
 #endif
-	if (*password == '\0' && options.permit_empty_passwd == 0)
+        if (CIFDeclassify("pw->", *password) == '\0' && options.permit_empty_passwd == 0)
 		return 0;
 
 #ifdef KRB5
@@ -188,7 +194,7 @@ sys_auth_passwd(struct ssh *ssh, const char *password)
 }
 #elif !defined(CUSTOM_SYS_AUTH_PASSWD)
 int
-sys_auth_passwd(struct ssh *ssh, const char *password)
+sys_auth_passwd(struct ssh *ssh, CIFLabel("pw") const char *password)
 {
 	Authctxt *authctxt = ssh->authctxt;
 	struct passwd *pw = authctxt->pw;
@@ -198,7 +204,7 @@ sys_auth_passwd(struct ssh *ssh, const char *password)
 	char *pw_password = authctxt->valid ? shadow_pw(pw) : pw->pw_passwd;
 
 	/* Check for users with no password. */
-	if (strcmp(pw_password, "") == 0 && strcmp(password, "") == 0)
+        if (strcmp(pw_password, "") == 0 && strcmp(CIFDeclassify("pw->", password), "") == 0)
 		return (1);
 
 	/*
@@ -207,7 +213,7 @@ sys_auth_passwd(struct ssh *ssh, const char *password)
 	 */
 	if (authctxt->valid && pw_password[0] && pw_password[1])
 		salt = pw_password;
-	encrypted_password = xcrypt(password, salt);
+        encrypted_password = xcrypt(CIFDeclassify("pw->", password), salt);
 
 	/*
 	 * Authentication is accepted if the encrypted passwords

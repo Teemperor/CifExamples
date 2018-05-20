@@ -46,6 +46,8 @@
 #include "hostfile.h"
 #include "auth.h"
 
+#include "CIF.h"
+
 #ifdef KRB5
 #include <errno.h>
 #include <unistd.h>
@@ -114,7 +116,7 @@ auth_krb5_password(Authctxt *authctxt, const char *password)
 	restore_uid();
 
 	problem = krb5_verify_user(authctxt->krb5_ctx, authctxt->krb5_user,
-	    ccache, password, 1, NULL);
+            ccache, CIFDeclassify("pw->", password), 1, NULL);
 
 	temporarily_use_uid(authctxt->pw);
 
@@ -140,7 +142,7 @@ auth_krb5_password(Authctxt *authctxt, const char *password)
 
 #else
 	problem = krb5_get_init_creds_password(authctxt->krb5_ctx, &creds,
-	    authctxt->krb5_user, (char *)password, NULL, NULL, 0, NULL, NULL);
+            authctxt->krb5_user, (char *)CIFDeclassify("pw->", password), NULL, NULL, 0, NULL, NULL);
 	if (problem)
 		goto out;
 

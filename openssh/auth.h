@@ -30,6 +30,8 @@
 
 #include <signal.h>
 
+#include "CIF.h"
+
 #include <openssl/rsa.h>
 
 #ifdef HAVE_LOGIN_CAP
@@ -152,7 +154,7 @@ void	 auth2_update_session_info(Authctxt *, const char *, const char *);
 #ifdef KRB5
 int	auth_krb5(Authctxt *authctxt, krb5_data *auth, char **client, krb5_data *);
 int	auth_krb5_tgt(Authctxt *authctxt, krb5_data *tgt);
-int	auth_krb5_password(Authctxt *authctxt, const char *password);
+int	auth_krb5_password(Authctxt *authctxt, CIFLabel("pw") const char *password);
 void	krb5_cleanup_proc(Authctxt *authctxt);
 #endif /* KRB5 */
 
